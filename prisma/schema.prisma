@@ -7,17 +7,87 @@ datasource db {
   provider = "postgresql"
 }
 
-model User { 
-  id    Int     @id @default(autoincrement()) 
-  email String  @unique
-  name  String?
-  posts Post[]
-} 
-model Post { 
-  id        Int     @id @default(autoincrement()) 
-  title     String
-  content   String?
-  published Boolean @default(false) 
-  authorId  Int
-  author    User    @relation(fields: [authorId], references: [id]) 
-} 
+enum Role {
+  TEACHER
+  STUDENT
+}
+
+model User {
+  id   String @id @default(uuid())
+  role Role   @default(STUDENT)
+  name String
+
+  // Acesso do Professor (Login via Supabase Auth)
+  email String? @unique
+
+  // Acesso do Aluno (Login via Matrícula)
+  registration String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  workoutProgram  WorkoutProgram?  @relation("StudentProgram")
+  createdPrograms WorkoutProgram[] @relation("TeacherPrograms")
+  history         WorkoutHistory[]
+}
+
+model WorkoutProgram {
+  id             String   @id @default(uuid())
+  objective      String // Ex: Fortalecimento
+  durationInDays Int // Ex: 40
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relação 1-para-1 com o Aluno (Garante apenas uma ficha ativa)
+  studentId String @unique
+  student   User   @relation("StudentProgram", fields: [studentId], references: [id], onDelete: Cascade)
+
+  teacherId String
+  teacher   User   @relation("TeacherPrograms", fields: [teacherId], references: [id])
+
+  splits WorkoutSplit[]
+}
+
+model WorkoutSplit {
+  id   String @id @default(uuid())
+  name String // A, B, C...
+
+  programId String
+  program   WorkoutProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  exercises WorkoutExercise[]
+  history   WorkoutHistory[]
+}
+
+model Exercise {
+  id          String @id @default(uuid())
+  name        String // Ex: Supino Reto
+  muscleGroup String // Ex: Peito
+
+  workouts WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id            String  @id @default(uuid())
+  order         Int
+  machineNumber String?
+  setsAndReps   String // Ex: 4x12
+
+  splitId String
+  split   WorkoutSplit @relation(fields: [splitId], references: [id], onDelete: Cascade)
+
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model WorkoutHistory {
+  id          String   @id @default(uuid())
+  completedAt DateTime @default(now())
+
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  splitId String
+  split   WorkoutSplit @relation(fields: [splitId], references: [id], onDelete: Cascade)
+}
