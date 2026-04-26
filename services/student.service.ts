@@ -41,4 +41,11 @@ export const StudentService = {
       },
     });
   },
+
+  // Busca um aluno específico pela matrícula
+  async getByRegistration(registration: string) {
+    return await prisma.user.findUnique({
+      where: { registration },
+    });
+  },
 };

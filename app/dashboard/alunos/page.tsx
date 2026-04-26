@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { StudentService } from "@/services/student.service";
 import { createStudentAction } from "@/app/actions/student";
 
 export default async function AlunosPage() {
-  // Vai buscar a lista de alunos ao banco de dados usando o nosso Service
   const students = await StudentService.getStudents();
 
   return (
@@ -90,10 +90,12 @@ export default async function AlunosPage() {
                     )}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                    {/* Botão preparado para o próximo passo */}
-                    <button className="text-blue-600 hover:text-blue-900">
+                    <Link
+                      href={`/dashboard/alunos/${student.id}/ficha`}
+                      className="font-medium text-blue-600 hover:text-blue-900"
+                    >
                       Montar Ficha
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))
