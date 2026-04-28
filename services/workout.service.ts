@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 
-// Garantia que o formulário envia os dados corretos
 export interface CreateWorkoutInput {
   studentId: string;
   teacherId: string;
@@ -73,6 +72,35 @@ export const WorkoutService = {
           orderBy: { name: "asc" },
         },
       },
+    });
+  },
+
+  // Registra a conclusão de uma divisão de treino (Ex: Treino A)
+  async finishSplit(studentId: string, splitId: string) {
+    return await prisma.workoutHistory.create({
+      data: {
+        studentId,
+        splitId,
+      },
+    });
+  },
+
+  // Busca os últimos treinos concluídos pelo aluno
+  async getStudentHistory(studentId: string, limit: number = 5) {
+    return await prisma.workoutHistory.findMany({
+      where: { studentId },
+      orderBy: { completedAt: "desc" },
+      take: limit,
+      include: {
+        split: true, // Traz os dados da divisão (ex: name: "A") para mostrar na tela
+      },
+    });
+  },
+
+  async countStudentHistory(studentId: string) {
+    // Retorna apenas o número total de treinos concluídos, sem trazer os detalhes de cada um
+    return await prisma.workoutHistory.count({
+      where: { studentId },
     });
   },
 };
