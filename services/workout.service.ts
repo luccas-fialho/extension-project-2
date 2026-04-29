@@ -103,4 +103,10 @@ export const WorkoutService = {
       where: { studentId },
     });
   },
+
+  async deleteProgram(studentId: string) {
+    return await prisma.workoutProgram.deleteMany({
+      where: { studentId },
+    });
+  },
 };

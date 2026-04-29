@@ -2,6 +2,7 @@
 
 import { WorkoutService, CreateWorkoutInput } from "@/services/workout.service";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createWorkoutAction(data: CreateWorkoutInput) {
   if (!data.studentId || !data.teacherId) {
@@ -10,7 +11,6 @@ export async function createWorkoutAction(data: CreateWorkoutInput) {
 
   await WorkoutService.createProgram(data);
 
-  // Atualiza a tabela de alunos para mostrar que a ficha está "Ativa"
   revalidatePath("/dashboard/alunos");
 
   return { success: true };
@@ -37,4 +37,10 @@ export async function finishWorkoutAction(prevState: any, formData: FormData) {
       error: "Erro ao registrar a conclusão do treino.",
     };
   }
+}
+
+export async function deleteWorkoutAction(studentId: string) {
+  await WorkoutService.deleteProgram(studentId);
+  revalidatePath("/dashboard/alunos");
+  redirect("/dashboard/alunos");
 }
