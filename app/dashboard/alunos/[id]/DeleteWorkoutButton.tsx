@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { deleteWorkoutAction } from "@/app/actions/workout";
 
 export function DeleteWorkoutButton({ studentId }: { studentId: string }) {
   const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
     // Confirmação de segurança
@@ -19,6 +21,7 @@ export function DeleteWorkoutButton({ studentId }: { studentId: string }) {
     setIsPending(true);
     try {
       await deleteWorkoutAction(studentId);
+      router.push("/dashboard/alunos");
     } catch (error) {
       console.error(error);
       alert("Ocorreu um erro ao excluir a ficha.");
