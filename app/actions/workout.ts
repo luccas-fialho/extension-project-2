@@ -42,5 +42,4 @@ export async function finishWorkoutAction(prevState: any, formData: FormData) {
 export async function deleteWorkoutAction(studentId: string) {
   await WorkoutService.deleteProgram(studentId);
   revalidatePath("/dashboard/alunos");
-  redirect("/dashboard/alunos");
 }
