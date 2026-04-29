@@ -46,5 +46,5 @@ export async function loginStudentAction(prevState: any, formData: FormData) {
     secure: process.env.NODE_ENV === "production",
   });
 
-  redirect("/aluno/treino");
+  redirect("/aluno");
 }

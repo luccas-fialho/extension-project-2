@@ -41,7 +41,7 @@ export default async function NovaFichaPage({
         <h1 className="text-3xl font-bold">Montar Ficha</h1>
         <p className="mt-1 text-gray-500">
           Criando um novo programa de treinamento para{" "}
-          <strong className="text-blue-600">{student.name}</strong>
+          <strong className="text-[#00FF00]">{student.name}</strong>
         </p>
       </div>
 

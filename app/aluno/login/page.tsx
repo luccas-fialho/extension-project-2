@@ -36,6 +36,7 @@ export default function AlunoLoginPage() {
             placeholder="000000"
             className="w-full rounded-xl border-2 border-gray-800 bg-gray-900 p-5 text-center text-4xl font-black tracking-[0.5em] text-[#00FF00] placeholder:text-gray-800 focus:border-[#00FF00] focus:outline-none transition-all"
             maxLength={6}
+            autoComplete="false"
           />
         </div>
 

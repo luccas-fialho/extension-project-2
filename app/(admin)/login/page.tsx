@@ -1,70 +1,68 @@
-"use client"; // Necessário para usar hooks do React
+"use client";
 
 import { loginTeacher } from "@/app/actions/auth";
 import { useActionState } from "react";
 
-export default function LoginPage() {
-  // O hook gerencia o estado do retorno da função e se está carregando
+export default function CoachLoginPage() {
   const [state, formAction, isPending] = useActionState(loginTeacher, null);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">
-          Acesso Professor
+    <div className="flex min-h-screen flex-col items-center justify-center bg-black p-6 text-white font-sans">
+      <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-gray-900 border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.2)]">
+        <span className="text-3xl font-black text-[#00FF00] italic">LF</span>
+      </div>
+
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-black uppercase italic tracking-tighter text-white">
+          Painel do <span className="text-[#00FF00]">Professor</span>
         </h1>
+        <p className="mt-2 text-sm font-medium uppercase tracking-widest text-gray-500">
+          Gestão de alunos e treinos
+        </p>
+      </div>
 
-        {/* Trocamos o action={loginTeacher} pelo formAction do hook */}
-        <form action={formAction} className="space-y-4">
-          {/* Se a Action retornar um erro, ele aparece aqui de forma elegante */}
-          {state?.error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-              {state.error}
-            </div>
-          )}
-
+      <form action={formAction} className="w-full max-w-sm space-y-6">
+        <div className="space-y-4">
           <div>
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="email"
-            >
-              Email
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              E-mail de Acesso
             </label>
             <input
-              id="email"
               name="email"
               type="email"
               required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
               placeholder="professores@lightfitness.com.br"
+              className="w-full rounded-xl border-2 border-gray-800 bg-gray-900 p-4 text-white placeholder:text-gray-600 focus:border-[#00FF00] focus:outline-none transition-all"
             />
           </div>
-
           <div>
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="password"
-            >
-              Password
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">
+              Senha
             </label>
             <input
-              id="password"
               name="password"
               type="password"
               required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              placeholder="••••••••"
+              className="w-full rounded-xl border-2 border-gray-800 bg-gray-900 p-4 text-white placeholder:text-gray-600 focus:border-[#00FF00] focus:outline-none transition-all"
             />
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={isPending} // Desabilita o botão enquanto processa o login
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {isPending ? "Entrando..." : "Entrar no Painel"}
-          </button>
-        </form>
-      </div>
+        {state?.error && (
+          <p className="text-center text-sm font-bold text-red-500 animate-pulse">
+            {state.error}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={isPending}
+          className="w-full rounded-xl bg-[#00FF00] p-5 text-lg font-black uppercase italic text-black transition-all hover:bg-[#00e600] active:scale-95 disabled:opacity-50 mt-4 cursor-pointer"
+        >
+          {isPending ? "Entrando..." : "Acessar Painel"}
+        </button>
+      </form>
     </div>
   );
 }

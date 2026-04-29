@@ -9,7 +9,7 @@ export default async function LandingPage() {
   const studentId = cookieStore.get("student_id")?.value;
 
   if (studentId) {
-    redirect("/aluno/treino");
+    redirect("/aluno");
   }
 
   // Verifica se existe professor logado
