@@ -1,107 +1,105 @@
-import Link from "next/link";
 import { StudentService } from "@/services/student.service";
 import { createStudentAction } from "@/app/actions/student";
+import Link from "next/link";
 
 export default async function AlunosPage() {
   const students = await StudentService.getStudents();
 
   return (
-    <div className="mx-auto max-w-6xl p-8">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900">
-        Gestão de Alunos
-      </h1>
+    <div className="min-h-screen bg-black text-white p-4 md:p-8 font-sans pb-24">
+      <header className="mb-8 border-l-4 border-[#00FF00] pl-4">
+        <h1 className="text-2xl font-black uppercase italic tracking-tight text-white">
+          Gestão de <span className="text-[#00FF00]">Alunos</span>
+        </h1>
+        <p className="text-sm font-medium text-gray-400 mt-1">
+          Cadastre e atualize as fichas
+        </p>
+      </header>
 
-      {/* Secção de Criação */}
-      <div className="mb-8 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-xl font-semibold text-gray-800">
+      <div className="mb-10 rounded-2xl border border-gray-800 bg-gray-900 p-5 shadow-lg">
+        <h2 className="mb-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
           Adicionar Novo Aluno
         </h2>
 
-        <form action={createStudentAction} className="flex items-end gap-4">
+        <form
+          action={createStudentAction}
+          className="flex flex-col gap-4 sm:flex-row sm:items-end"
+        >
           <div className="flex-1">
-            <label
-              htmlFor="name"
-              className="mb-1 block text-sm font-medium text-gray-700"
-            >
-              Nome do Aluno
-            </label>
             <input
               type="text"
               name="name"
               id="name"
               required
-              className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              placeholder="Ex: João Silva"
+              className="w-full rounded-xl border-2 border-gray-800 bg-black p-4 text-white placeholder:text-gray-600 focus:border-[#00FF00] focus:outline-none transition-all"
+              placeholder="Nome do Aluno (ex: João Silva)"
             />
           </div>
           <button
             type="submit"
-            className="rounded-md bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="rounded-xl bg-[#00FF00] px-6 py-4 font-black uppercase italic text-black hover:bg-[#00CC00] active:scale-95 transition-all whitespace-nowrap cursor-pointer"
           >
             Gerar Matrícula
           </button>
         </form>
       </div>
 
-      {/* Tabela de Alunos */}
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Nome
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Matrícula (Login)
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Status da Ficha
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Ações
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {students.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-                  Nenhum aluno cadastrado ainda. Comece por adicionar um acima!
-                </td>
-              </tr>
-            ) : (
-              students.map((student) => (
-                <tr key={student.id}>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+      <div className="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 lg:grid-cols-3 xl:grid-cols-4">
+        {students.length === 0 ? (
+          <div className="col-span-full rounded-2xl border border-gray-800 bg-gray-900 p-8 text-center">
+            <p className="text-gray-500 font-medium">
+              Nenhum aluno cadastrado ainda.
+            </p>
+          </div>
+        ) : (
+          students.map((student) => (
+            <div
+              key={student.id}
+              className="flex flex-col rounded-2xl border border-gray-800 bg-gray-900 p-5 transition-colors hover:border-gray-700"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-white capitalize">
                     {student.name}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-bold text-blue-600">
-                    {student.registration}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                    {student.workoutProgram ? (
-                      <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                        Ficha Ativa
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                        Sem Ficha
-                      </span>
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
-                    <Link
-                      href={`/dashboard/alunos/${student.id}/ficha`}
-                      className="font-medium text-blue-600 hover:text-blue-900"
-                    >
-                      Montar Ficha
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest">
+                    Matrícula:{" "}
+                    <span className="font-black text-[#00FF00] text-sm tracking-[0.2em]">
+                      {student.registration}
+                    </span>
+                  </p>
+                </div>
+
+                <div>
+                  {student.workoutProgram ? (
+                    <span className="inline-flex items-center rounded-full bg-[#00FF00]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-[#00FF00] border border-[#00FF00]/20">
+                      Ficha Ativa
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-gray-800 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                      Sem Ficha
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-auto pt-4 border-t border-gray-800">
+                <Link
+                  href={`/dashboard/alunos/${student.id}/ficha`}
+                  className={`block w-full text-center rounded-lg px-4 py-3 text-xs font-black uppercase tracking-widest transition-all ${
+                    student.workoutProgram
+                      ? "border border-gray-700 text-white hover:bg-gray-800"
+                      : "border border-[#00FF00] text-[#00FF00] hover:bg-[#00FF00] hover:text-black"
+                  }`}
+                >
+                  {student.workoutProgram
+                    ? "Editar Ficha"
+                    : "Montar Nova Ficha"}
+                </Link>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

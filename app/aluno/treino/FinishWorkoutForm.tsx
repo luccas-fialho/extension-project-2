@@ -1,10 +1,27 @@
-'use client';
+"use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { finishWorkoutAction } from "@/app/actions/workout";
+import { useRouter } from "next/navigation";
 
-export function FinishWorkoutForm({ studentId, splitId }: { studentId: string; splitId: string }) {
-  const [state, formAction, isPending] = useActionState(finishWorkoutAction, null);
+export function FinishWorkoutForm({
+  studentId,
+  splitId,
+}: {
+  studentId: string;
+  splitId: string;
+}) {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState(
+    finishWorkoutAction,
+    null,
+  );
+
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/aluno");
+    }
+  }, [state, router]);
 
   return (
     <form action={formAction} className="mt-2 space-y-2">
@@ -20,7 +37,6 @@ export function FinishWorkoutForm({ studentId, splitId }: { studentId: string; s
         {isPending ? "Registrando..." : "Finalizar Treino"}
       </button>
 
-      {/* Feedback de erro ou sucesso */}
       {state?.error && (
         <p className="text-xs text-center font-bold tracking-wide text-red-500">
           {state.error}
