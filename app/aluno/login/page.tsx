@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { loginStudentAction } from "@/app/actions/auth";
 import { useActionState } from "react";
 
@@ -12,7 +13,12 @@ export default function AlunoLoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-black p-6 text-white font-sans">
       <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-[#00FF00] shadow-[0_0_30px_rgba(0,255,0,0.3)]">
-        <span className="text-3xl font-black text-black italic">LF</span>
+        <Image
+          src={"/logo.png"}
+          height={96}
+          width={96}
+          alt="Logo Light Fitness"
+        />
       </div>
 
       <div className="text-center">
