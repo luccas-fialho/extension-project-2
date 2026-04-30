@@ -1,7 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { createExerciseAction } from "@/app/actions/workout";
+import { createExerciseAction } from "@/app/actions/exercise";
+
+// Lista padronizada e imutável de grupos musculares (em ordem alfabética)
+const MUSCLE_GROUPS = [
+  "Abdômen",
+  "Bíceps",
+  "Costas",
+  "Glúteos",
+  "Ombros",
+  "Panturrilhas",
+  "Peito",
+  "Pernas",
+  "Tríceps",
+  "Outros",
+];
 
 interface Props {
   isOpen: boolean;
@@ -15,7 +29,8 @@ interface Props {
 
 export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
   const [name, setName] = useState("");
-  const [muscleGroup, setMuscleGroup] = useState("");
+  // Define o valor inicial como o primeiro item da lista para não ir vazio
+  const [muscleGroup, setMuscleGroup] = useState(MUSCLE_GROUPS[0]);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -25,14 +40,11 @@ export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
     setIsLoading(true);
 
     try {
-      // Se não preencher o grupo, definimos como 'Outros'
-      const newEx = await createExerciseAction(name, muscleGroup || "Outros");
+      const newEx = await createExerciseAction(name, muscleGroup);
 
       if (newEx) {
         onSuccess(newEx);
-        // Limpa os campos para o próximo uso
         setName("");
-        setMuscleGroup("");
       } else {
         alert("Erro ao salvar o exercício no banco de dados.");
       }
@@ -53,7 +65,7 @@ export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
           </h3>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-800 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
           >
             ✕
           </button>
@@ -70,7 +82,7 @@ export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
               onChange={(e) => setName(e.target.value)}
               required
               autoFocus
-              placeholder="Ex: Supino Inclinado com Halteres"
+              placeholder="Ex: Supino Inclinado"
               className="w-full rounded-xl border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
             />
           </div>
@@ -79,16 +91,20 @@ export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
             <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-gray-400">
               Grupo Muscular
             </label>
-            <input
-              type="text"
+            <select
               value={muscleGroup}
               onChange={(e) => setMuscleGroup(e.target.value)}
-              placeholder="Ex: Peito, Costas, Pernas"
-              className="w-full rounded-xl border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
-            />
+              className="w-full cursor-pointer rounded-xl border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
+            >
+              {MUSCLE_GROUPS.map((group) => (
+                <option key={group} value={group}>
+                  {group}
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="mt-6 flex gap-3 pt-4 border-t border-gray-800">
+          <div className="mt-6 flex gap-3 border-t border-gray-800 pt-4">
             <button
               type="button"
               onClick={onClose}
@@ -101,7 +117,7 @@ export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
               disabled={isLoading}
               className="flex-1 cursor-pointer rounded-xl bg-[#00FF00] p-3 text-xs font-black uppercase italic tracking-widest text-black transition-all hover:bg-[#00CC00] active:scale-95 disabled:opacity-50"
             >
-              {isLoading ? "Salvando..." : "Criar"}
+              {isLoading ? "A Salvar..." : "Criar"}
             </button>
           </div>
         </form>
