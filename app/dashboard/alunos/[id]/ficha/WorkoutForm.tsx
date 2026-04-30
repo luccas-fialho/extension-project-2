@@ -2,7 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { createWorkoutAction } from "@/app/actions/workout";
+import {
+  createWorkoutAction,
+  createExerciseAction,
+} from "@/app/actions/workout"; // Importando a nova action
 import { CreateWorkoutInput } from "@/services/workout.service";
 
 interface Props {
@@ -23,20 +26,23 @@ export default function WorkoutForm({
   const [duration, setDuration] = useState(40);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Transforma a lista do servidor num estado local para podermos adicionar na hora
+  const [exercisesList, setExercisesList] = useState(availableExercises);
+
   const [splits, setSplits] = useState<CreateWorkoutInput["splits"]>([
     { name: "A", exercises: [] },
   ]);
 
-  // Lógica de agrupamento e ordenação
+  // Agrupamento agora observa a 'exercisesList' local
   const groupedExercises = useMemo(() => {
-    const groups = availableExercises.reduce(
+    const groups = exercisesList.reduce(
       (acc, exercise) => {
         const group = exercise.muscleGroup || "Outros";
         if (!acc[group]) acc[group] = [];
         acc[group].push(exercise);
         return acc;
       },
-      {} as Record<string, typeof availableExercises>,
+      {} as Record<string, typeof exercisesList>,
     );
 
     return Object.keys(groups)
@@ -46,9 +52,28 @@ export default function WorkoutForm({
           acc[key] = groups[key].sort((a, b) => a.name.localeCompare(b.name));
           return acc;
         },
-        {} as Record<string, typeof availableExercises>,
+        {} as Record<string, typeof exercisesList>,
       );
-  }, [availableExercises]);
+  }, [exercisesList]);
+
+  // Função mágica para criar o exercício
+  const handleCreateNewExercise = async () => {
+    const name = window.prompt("Qual o nome do novo exercício?");
+    if (!name) return;
+
+    const muscleGroup =
+      window.prompt("Qual o grupo muscular? (Ex: Peito, Pernas, Costas)") ||
+      "Outros";
+
+    const newEx = await createExerciseAction(name, muscleGroup);
+
+    if (newEx) {
+      setExercisesList((prev) => [...prev, newEx]);
+      alert(`Exercício "${newEx.name}" adicionado à lista com sucesso!`);
+    } else {
+      alert("Erro ao salvar o exercício no banco de dados.");
+    }
+  };
 
   const handleAddSplit = () => {
     const nextLetter = String.fromCharCode("A".charCodeAt(0) + splits.length);
@@ -58,7 +83,7 @@ export default function WorkoutForm({
   const handleAddExercise = (splitIndex: number) => {
     const newSplits = [...splits];
     newSplits[splitIndex].exercises.push({
-      exerciseId: availableExercises[0]?.id || "",
+      exerciseId: exercisesList[0]?.id || "",
       setsAndReps: "4x12",
       order: newSplits[splitIndex].exercises.length + 1,
     });
@@ -110,6 +135,7 @@ export default function WorkoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 font-sans">
+      {/* Configurações Gerais */}
       <div className="rounded-2xl border border-gray-800 bg-gray-900 p-5 shadow-lg">
         <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-[#00FF00]">
           Configurações da Ficha
@@ -142,14 +168,13 @@ export default function WorkoutForm({
         </div>
       </div>
 
-      {/* Divisões de Treino (A, B, C...) */}
+      {/* Divisões de Treino */}
       <div className="space-y-6">
         {splits.map((split, sIndex) => (
           <div
             key={sIndex}
             className="rounded-2xl border border-gray-800 bg-black p-4 shadow-sm sm:p-6"
           >
-            {/* Cabeçalho do Treino */}
             <div className="mb-6 flex items-center justify-between border-b border-gray-800 pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#00FF00] text-lg font-black text-black">
@@ -184,10 +209,21 @@ export default function WorkoutForm({
                   </button>
 
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-                    <div className="flex-3">
-                      <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                        Exercício
-                      </label>
+                    {/* Seleção do Exercício (Usando Tailwind flex-3 nativo) */}
+                    <div className="flex-3 sm:flex-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                          Exercício
+                        </label>
+                        {/* BOTÃO PARA CRIAR NOVO EXERCÍCIO NA HORA */}
+                        <button
+                          type="button"
+                          onClick={handleCreateNewExercise}
+                          className="cursor-pointer text-[9px] font-bold text-[#00FF00] hover:underline"
+                        >
+                          + CRIAR NOVO
+                        </button>
+                      </div>
                       <select
                         value={ex.exerciseId}
                         onChange={(e) =>
@@ -222,6 +258,7 @@ export default function WorkoutForm({
                       </select>
                     </div>
 
+                    {/* Séries (Usando Tailwind flex-1 nativo) */}
                     <div className="flex-1">
                       <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">
                         Séries x Reps
@@ -276,7 +313,7 @@ export default function WorkoutForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-2 cursor-pointer rounded-xl bg-[#00FF00] p-4 text-sm font-black uppercase italic tracking-widest text-black transition-all hover:bg-[#00CC00] active:scale-95 disabled:opacity-50"
+          className="flex-2 sm:flex-2 cursor-pointer rounded-xl bg-[#00FF00] p-4 text-sm font-black uppercase italic tracking-widest text-black transition-all hover:bg-[#00CC00] active:scale-95 disabled:opacity-50"
         >
           {isSubmitting ? "Salvando..." : "Salvar Ficha"}
         </button>

@@ -10,7 +10,6 @@ export interface CreateWorkoutInput {
     exercises: {
       exerciseId: string;
       setsAndReps: string;
-      machineNumber?: string;
       order: number;
     }[];
   }[];
@@ -48,7 +47,6 @@ export const WorkoutService = {
               create: split.exercises.map((ex) => ({
                 exerciseId: ex.exerciseId,
                 setsAndReps: ex.setsAndReps,
-                machineNumber: ex.machineNumber,
                 order: ex.order,
               })),
             },
@@ -107,6 +105,15 @@ export const WorkoutService = {
   async deleteProgram(studentId: string) {
     return await prisma.workoutProgram.deleteMany({
       where: { studentId },
+    });
+  },
+
+  async createExercise(name: string, muscleGroup: string) {
+    return await prisma.exercise.create({
+      data: {
+        name,
+        muscleGroup,
+      },
     });
   },
 };

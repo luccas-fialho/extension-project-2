@@ -43,3 +43,13 @@ export async function deleteWorkoutAction(studentId: string) {
   await WorkoutService.deleteProgram(studentId);
   revalidatePath("/dashboard/alunos");
 }
+
+export async function createExerciseAction(name: string, muscleGroup: string) {
+  try {
+    const newExercise = await WorkoutService.createExercise(name, muscleGroup)
+    return newExercise
+  } catch (error) {
+    console.error("Erro ao criar exercício:", error)
+    return null
+  }
+}
