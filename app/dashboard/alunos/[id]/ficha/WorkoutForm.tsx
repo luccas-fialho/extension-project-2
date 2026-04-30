@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createWorkoutAction } from "@/app/actions/workout";
 import { CreateWorkoutInput } from "@/services/workout.service";
@@ -27,6 +27,29 @@ export default function WorkoutForm({
     { name: "A", exercises: [] },
   ]);
 
+  // Lógica de agrupamento e ordenação
+  const groupedExercises = useMemo(() => {
+    const groups = availableExercises.reduce(
+      (acc, exercise) => {
+        const group = exercise.muscleGroup || "Outros";
+        if (!acc[group]) acc[group] = [];
+        acc[group].push(exercise);
+        return acc;
+      },
+      {} as Record<string, typeof availableExercises>,
+    );
+
+    return Object.keys(groups)
+      .sort()
+      .reduce(
+        (acc, key) => {
+          acc[key] = groups[key].sort((a, b) => a.name.localeCompare(b.name));
+          return acc;
+        },
+        {} as Record<string, typeof availableExercises>,
+      );
+  }, [availableExercises]);
+
   const handleAddSplit = () => {
     const nextLetter = String.fromCharCode("A".charCodeAt(0) + splits.length);
     setSplits([...splits, { name: nextLetter, exercises: [] }]);
@@ -37,7 +60,6 @@ export default function WorkoutForm({
     newSplits[splitIndex].exercises.push({
       exerciseId: availableExercises[0]?.id || "",
       setsAndReps: "4x12",
-      machineNumber: "",
       order: newSplits[splitIndex].exercises.length + 1,
     });
     setSplits(newSplits);
@@ -46,7 +68,6 @@ export default function WorkoutForm({
   const handleRemoveExercise = (splitIndex: number, exerciseIndex: number) => {
     const newSplits = [...splits];
     newSplits[splitIndex].exercises.splice(exerciseIndex, 1);
-    // Reordenar os restantes
     newSplits[splitIndex].exercises.forEach((ex, idx) => (ex.order = idx + 1));
     setSplits(newSplits);
   };
@@ -89,7 +110,6 @@ export default function WorkoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 font-sans">
-      {/* Configurações Gerais da Ficha */}
       <div className="rounded-2xl border border-gray-800 bg-gray-900 p-5 shadow-lg">
         <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-[#00FF00]">
           Configurações da Ficha
@@ -104,7 +124,7 @@ export default function WorkoutForm({
               value={objective}
               onChange={(e) => setObjective(e.target.value)}
               required
-              className="w-full rounded-xl border-2 border-gray-800 bg-black p-4 text-base text-white focus:border-[#00FF00] focus:outline-none transition-all"
+              className="w-full rounded-xl border-2 border-gray-800 bg-black p-4 text-base text-white transition-all focus:border-[#00FF00] focus:outline-none"
             />
           </div>
           <div>
@@ -116,7 +136,7 @@ export default function WorkoutForm({
               value={duration}
               onChange={(e) => setDuration(Number(e.target.value))}
               required
-              className="w-full rounded-xl border-2 border-gray-800 bg-black p-4 text-base text-white focus:border-[#00FF00] focus:outline-none transition-all"
+              className="w-full rounded-xl border-2 border-gray-800 bg-black p-4 text-base text-white transition-all focus:border-[#00FF00] focus:outline-none"
             />
           </div>
         </div>
@@ -127,8 +147,9 @@ export default function WorkoutForm({
         {splits.map((split, sIndex) => (
           <div
             key={sIndex}
-            className="rounded-2xl border border-gray-800 bg-black p-4 sm:p-6 shadow-sm"
+            className="rounded-2xl border border-gray-800 bg-black p-4 shadow-sm sm:p-6"
           >
+            {/* Cabeçalho do Treino */}
             <div className="mb-6 flex items-center justify-between border-b border-gray-800 pb-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#00FF00] text-lg font-black text-black">
@@ -141,9 +162,9 @@ export default function WorkoutForm({
               <button
                 type="button"
                 onClick={() => handleAddExercise(sIndex)}
-                className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#00FF00] border border-[#00FF00]/30 hover:bg-[#00FF00]/10 transition-colors cursor-pointer"
+                className="cursor-pointer rounded-lg border border-[#00FF00]/30 bg-gray-900 px-4 py-2 text-xs font-bold uppercase tracking-widest text-[#00FF00] transition-colors hover:bg-[#00FF00]/10"
               >
-                + Exercício
+                + Adicionar Exercício
               </button>
             </div>
 
@@ -151,20 +172,22 @@ export default function WorkoutForm({
               {split.exercises.map((ex, eIndex) => (
                 <div
                   key={eIndex}
-                  className="relative rounded-xl border border-gray-800 bg-gray-900 p-4"
+                  className="relative rounded-xl border border-gray-800 bg-gray-900 p-4 sm:p-5"
                 >
-                  {/* Botão de Remover Exercício */}
                   <button
                     type="button"
                     onClick={() => handleRemoveExercise(sIndex, eIndex)}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md hover:bg-red-600 cursor-pointer"
+                    className="absolute -right-2 -top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-transform hover:scale-110 hover:bg-red-600"
+                    title="Remover Exercício"
                   >
                     ✕
                   </button>
 
-                  <div className="flex flex-col gap-3">
-                    {/* Linha 1: Seleção do Exercício (Ocupa 100%) */}
-                    <div className="w-full">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                    <div className="flex-3">
+                      <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Exercício
+                      </label>
                       <select
                         value={ex.exerciseId}
                         onChange={(e) =>
@@ -175,58 +198,56 @@ export default function WorkoutForm({
                             e.target.value,
                           )
                         }
-                        className="w-full rounded-lg border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
+                        className="w-full cursor-pointer rounded-lg border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
                       >
-                        {availableExercises.map((opt) => (
-                          <option key={opt.id} value={opt.id}>
-                            {opt.name} ({opt.muscleGroup})
-                          </option>
-                        ))}
+                        {Object.entries(groupedExercises).map(
+                          ([group, exercises]) => (
+                            <optgroup
+                              key={group}
+                              label={`--- ${group.toUpperCase()} ---`}
+                              className="bg-gray-900 font-bold text-[#00FF00]"
+                            >
+                              {exercises.map((opt) => (
+                                <option
+                                  key={opt.id}
+                                  value={opt.id}
+                                  className="bg-black font-medium text-white"
+                                >
+                                  {opt.name}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ),
+                        )}
                       </select>
                     </div>
 
-                    {/* Linha 2: Séries e Máquina (Lado a lado no mobile) */}
-                    <div className="flex gap-3">
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          placeholder="Séries x Reps (Ex: 4x12)"
-                          value={ex.setsAndReps}
-                          onChange={(e) =>
-                            handleExerciseChange(
-                              sIndex,
-                              eIndex,
-                              "setsAndReps",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full rounded-lg border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
-                        />
-                      </div>
-                      <div className="w-24 shrink-0 sm:w-32">
-                        <input
-                          type="text"
-                          placeholder="MÁQ"
-                          value={ex.machineNumber || ""}
-                          onChange={(e) =>
-                            handleExerciseChange(
-                              sIndex,
-                              eIndex,
-                              "machineNumber",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full rounded-lg border border-gray-700 bg-black p-3 text-center text-sm text-white focus:border-[#00FF00] focus:outline-none"
-                        />
-                      </div>
+                    <div className="flex-1">
+                      <label className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        Séries x Reps
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ex: 4x12"
+                        value={ex.setsAndReps}
+                        onChange={(e) =>
+                          handleExerciseChange(
+                            sIndex,
+                            eIndex,
+                            "setsAndReps",
+                            e.target.value,
+                          )
+                        }
+                        className="w-full rounded-lg border border-gray-700 bg-black p-3 text-sm text-white focus:border-[#00FF00] focus:outline-none"
+                      />
                     </div>
                   </div>
                 </div>
               ))}
 
               {split.exercises.length === 0 && (
-                <p className="text-center text-sm text-gray-600 py-4 font-medium uppercase tracking-widest">
-                  Nenhum exercício adicionado.
+                <p className="py-6 text-center text-sm font-medium uppercase tracking-widest text-gray-600">
+                  Nenhum exercício neste treino.
                 </p>
               )}
             </div>
@@ -234,22 +255,20 @@ export default function WorkoutForm({
         ))}
       </div>
 
-      {/* Botão de Adicionar Nova Divisão (A, B, C...) */}
       <button
         type="button"
         onClick={handleAddSplit}
-        className="w-full rounded-xl border-2 border-dashed border-gray-700 bg-black p-4 text-sm font-bold uppercase tracking-widest text-gray-400 hover:border-[#00FF00] hover:text-[#00FF00] transition-colors cursor-pointer"
+        className="w-full cursor-pointer rounded-xl border-2 border-dashed border-gray-700 bg-black p-4 text-sm font-bold uppercase tracking-widest text-gray-400 transition-colors hover:border-[#00FF00] hover:text-[#00FF00]"
       >
-        + Adicionar Treino{" "}
+        + Adicionar Novo Treino{" "}
         {String.fromCharCode("A".charCodeAt(0) + splits.length)}
       </button>
 
-      {/* Área de Ações Fixa no Rodapé (Mobile First) */}
       <div className="sticky bottom-0 z-10 -mx-4 mt-8 flex gap-3 border-t border-gray-800 bg-black/90 p-4 backdrop-blur-md sm:static sm:mx-0 sm:bg-transparent sm:p-0 sm:backdrop-blur-none">
         <button
           type="button"
           onClick={() => router.push("/dashboard/alunos")}
-          className="flex-1 rounded-xl border-2 border-gray-700 bg-gray-900 p-4 text-sm font-bold uppercase tracking-widest text-gray-300 hover:border-gray-500 hover:text-white transition-all active:scale-95 cursor-pointer"
+          className="flex-1 cursor-pointer rounded-xl border-2 border-gray-700 bg-gray-900 p-4 text-sm font-bold uppercase tracking-widest text-gray-300 transition-all hover:border-gray-500 hover:text-white active:scale-95"
         >
           Cancelar
         </button>
@@ -257,7 +276,7 @@ export default function WorkoutForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-2 rounded-xl bg-[#00FF00] p-4 text-sm font-black uppercase italic tracking-widest text-black hover:bg-[#00CC00] transition-all disabled:opacity-50 active:scale-95 cursor-pointer"
+          className="flex-2 cursor-pointer rounded-xl bg-[#00FF00] p-4 text-sm font-black uppercase italic tracking-widest text-black transition-all hover:bg-[#00CC00] active:scale-95 disabled:opacity-50"
         >
           {isSubmitting ? "Salvando..." : "Salvar Ficha"}
         </button>
