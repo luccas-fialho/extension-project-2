@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { WorkoutService } from "@/services/workout.service";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function AlunoDashboard() {
   const cookieStore = await cookies();
@@ -58,7 +59,12 @@ export default async function AlunoDashboard() {
     <div className="min-h-screen bg-black p-6 text-white font-sans pb-24">
       <header className="mb-10 text-center">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.3)]">
-          <span className="text-xl font-black italic text-black">LF</span>
+          <Image
+            src={"/logo.png"}
+            height={96}
+            width={96}
+            alt="Logo Light Fitness"
+          />
         </div>
         <h1 className="text-2xl font-black uppercase italic tracking-tighter">
           Meu <span className="text-[#00FF00]">Progresso</span>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { loginTeacher } from "@/app/actions/auth";
 import { useActionState } from "react";
 
@@ -9,7 +10,12 @@ export default function CoachLoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-black p-6 text-white font-sans">
       <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-gray-900 border-2 border-[#00FF00] shadow-[0_0_20px_rgba(0,255,0,0.2)]">
-        <span className="text-3xl font-black text-[#00FF00] italic">LF</span>
+        <Image
+          src={"/logo.png"}
+          height={96}
+          width={96}
+          alt="Logo Light Fitness"
+        />
       </div>
 
       <div className="text-center mb-10">

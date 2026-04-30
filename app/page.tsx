@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -28,7 +29,12 @@ export default async function LandingPage() {
 
       <div className="relative z-10 flex flex-col items-center text-center">
         <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#00FF00] shadow-[0_0_30px_rgba(0,255,0,0.4)]">
-          <span className="text-4xl font-black text-black italic">LF</span>
+          <Image
+            src={"/logo.png"}
+            height={96}
+            width={96}
+            alt="Logo Light Fitness"
+          />
         </div>
 
         <h1 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter text-white mb-2">
