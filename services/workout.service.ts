@@ -15,6 +15,17 @@ export interface CreateWorkoutInput {
   }[];
 }
 
+function standardizeText(text: string) {
+  if (!text) return ''
+  return text
+    .trim()
+    .toLowerCase()
+    .split(' ')
+    .filter(word => word.length > 0)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
 export const WorkoutService = {
   // Vai buscar o catálogo de exercícios para o professor escolher no formulário
   async getExercises() {
@@ -111,8 +122,8 @@ export const WorkoutService = {
   async createExercise(name: string, muscleGroup: string) {
     return await prisma.exercise.create({
       data: {
-        name,
-        muscleGroup,
+        name: standardizeText(name),
+        muscleGroup: standardizeText(muscleGroup) || 'Outros',
       },
     });
   },
