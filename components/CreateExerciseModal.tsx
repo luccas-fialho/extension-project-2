@@ -117,7 +117,7 @@ export function CreateExerciseModal({ isOpen, onClose, onSuccess }: Props) {
               disabled={isLoading}
               className="flex-1 cursor-pointer rounded-xl bg-[#00FF00] p-3 text-xs font-black uppercase italic tracking-widest text-black transition-all hover:bg-[#00CC00] active:scale-95 disabled:opacity-50"
             >
-              {isLoading ? "A Salvar..." : "Criar"}
+              {isLoading ? "Salvando..." : "Criar"}
             </button>
           </div>
         </form>
