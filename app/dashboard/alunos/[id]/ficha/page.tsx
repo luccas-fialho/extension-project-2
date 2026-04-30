@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { StudentService } from "@/services/student.service";
-import { WorkoutService } from "@/services/workout.service";
+import { ExerciseService } from "@/services/exercise.service";
 import WorkoutForm from "./WorkoutForm";
 import Link from "next/link";
 
@@ -28,7 +28,7 @@ export default async function NovaFichaPage({
   if (!teacher || !student) redirect("/dashboard/alunos");
 
   // Busca o catálogo de exercícios
-  const exercises = await WorkoutService.getExercises();
+  const exercises = await ExerciseService.getAllExercises();
 
   return (
     <div className="min-h-screen w-full bg-black text-white font-sans pb-24">
