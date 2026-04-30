@@ -10,7 +10,7 @@ export default async function AlunosPage() {
       <div className="mx-auto max-w-7xl p-4 md:p-8 md:pt-12">
         <header className="mb-10 border-l-4 border-[#00FF00] pl-4">
           <h1 className="text-2xl font-black uppercase italic tracking-tight text-white md:text-4xl">
-            Gestão de <span className="text-[#00FF00]">Alunos</span>
+            Gestão de <span className="text-[#00FF00]">Alunos e Fichas</span>
           </h1>
           <p className="mt-2 text-sm font-medium text-gray-400">
             Cadastre e atualize as fichas da academia
@@ -40,7 +40,7 @@ export default async function AlunosPage() {
               type="submit"
               className="cursor-pointer whitespace-nowrap rounded-xl bg-[#00FF00] px-8 py-4 font-black uppercase italic text-black transition-all hover:bg-[#00CC00] active:scale-95"
             >
-              + Gerar Matrícula
+              + Cadastrar Aluno
             </button>
           </form>
         </div>

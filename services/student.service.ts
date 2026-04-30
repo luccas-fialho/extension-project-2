@@ -55,4 +55,10 @@ export const StudentService = {
       where: { registration },
     });
   },
+
+  async getByEmail(email: string) {
+    return await prisma.user.findUnique({
+      where: { email }
+    })
+  },
 };

@@ -1,8 +1,8 @@
 "use server";
 
 import { WorkoutService, CreateWorkoutInput } from "@/services/workout.service";
+import { ExerciseService } from "@/services/exercise.service";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function createWorkoutAction(data: CreateWorkoutInput) {
   if (!data.studentId || !data.teacherId) {
@@ -42,4 +42,14 @@ export async function finishWorkoutAction(prevState: any, formData: FormData) {
 export async function deleteWorkoutAction(studentId: string) {
   await WorkoutService.deleteProgram(studentId);
   revalidatePath("/dashboard/alunos");
+}
+
+export async function createExerciseAction(name: string, muscleGroup: string) {
+  try {
+    const newExercise = await ExerciseService.create(name, muscleGroup);
+    return newExercise;
+  } catch (error) {
+    console.error("Erro ao criar exercício:", error);
+    return null;
+  }
 }
