@@ -12,3 +12,19 @@ export async function createStudentAction(formData: FormData) {
 
   revalidatePath("/dashboard/alunos");
 }
+
+export async function deleteStudentAction(id: string) {
+  try {
+    await StudentService.delete(id);
+
+    revalidatePath("/dashboard/alunos", "layout");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao eliminar o aluno:", error);
+    return {
+      success: false,
+      error: "Não foi possível eliminar o aluno da base de dados.",
+    };
+  }
+}
