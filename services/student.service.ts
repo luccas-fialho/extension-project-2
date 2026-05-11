@@ -61,4 +61,18 @@ export const StudentService = {
       where: { email }
     })
   },
+
+  async delete(id: string) {
+    await prisma.workoutProgram.deleteMany({
+      where: { studentId: id },
+    });
+
+    await prisma.workoutHistory.deleteMany({
+      where: { studentId: id },
+    });
+
+    return await prisma.user.delete({
+      where: { id },
+    });
+  },
 };

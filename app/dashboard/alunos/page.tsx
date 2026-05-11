@@ -1,6 +1,7 @@
 import { StudentService } from "@/services/student.service";
 import { createStudentAction } from "@/app/actions/student";
 import Link from "next/link";
+import { DeleteStudentListButton } from "./DeleteStudentListButton";
 
 export default async function AlunosPage() {
   const students = await StudentService.getStudents();
@@ -82,6 +83,11 @@ export default async function AlunosPage() {
                       </span>
                     )}
                   </div>
+
+                  <DeleteStudentListButton
+                    studentId={student.id}
+                    studentName={student.name}
+                  />
                 </div>
 
                 <div className="mt-auto border-t border-gray-800 pt-5">
