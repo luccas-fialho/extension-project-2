@@ -58,8 +58,8 @@ export const StudentService = {
 
   async getByEmail(email: string) {
     return await prisma.user.findUnique({
-      where: { email }
-    })
+      where: { email },
+    });
   },
 
   async delete(id: string) {
@@ -73,6 +73,22 @@ export const StudentService = {
 
     return await prisma.user.delete({
       where: { id },
+    });
+  },
+
+  async findByRegistration(registration: string) {
+    return await prisma.user.findFirst({
+      where: { registration },
+    });
+  },
+
+  async update(id: string, name: string, registration: string) {
+    return await prisma.user.update({
+      where: { id },
+      data: {
+        name,
+        registration,
+      },
     });
   },
 };
