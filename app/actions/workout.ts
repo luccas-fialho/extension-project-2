@@ -11,6 +11,7 @@ export async function createWorkoutAction(data: CreateWorkoutInput) {
 
   await WorkoutService.createProgram(data);
 
+  revalidatePath("/dashboard/alunos", "layout");
   revalidatePath("/dashboard/alunos");
 
   return { success: true };
